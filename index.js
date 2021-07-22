@@ -9,8 +9,8 @@ const db = require('./db');
 // make tables: Department (id, name), Role (id, title, salary, department_id), Employee (id, first_name, last_name, role_id, manager_id) - DONE
 // Make Seed.sql to populate tables - DONE
 // SQL Joins to combine tables in database - MAYBE?
-// inquirer prompts to populate table information
-// console.table functionality?
+// inquirer prompts to populate table information - DONE
+// console.table functionality? - MAYBE?
 // Walkthrough video
 
 function prompts() {
