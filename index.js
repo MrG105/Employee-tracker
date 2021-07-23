@@ -27,9 +27,7 @@ function prompts() {
                 "View All Departments",
                 "View All Roles",
                 "View All Employees",
-                new inquirer.Separator(),
-                "Update Employee Role",
-                new inquirer.Separator()
+                new inquirer.Separator()                
             ]                   
         }
     ]).then(userChoice => {
@@ -51,9 +49,6 @@ function prompts() {
                 break;
             case "View All Employees":
                 viewEmployee();
-                break;
-            case "Update Employee Role":
-                updateEmployee();
                 break;
         }
     })
@@ -90,7 +85,7 @@ function viewEmployee() {
 }
 
 function addDept() {
-    prompt([
+    inquirer.prompt([
         {
             name: "name",
             message: "What Is The Name Of Your Department?"
@@ -104,7 +99,7 @@ function addDept() {
 }
 
 function addEmployee() {
-    prompt([
+    inquirer.prompt([
         {
             name: "first_name",
             message: "What Is Your Employee's First Name?"
@@ -125,7 +120,7 @@ function addEmployee() {
                 value: id
             }));
 
-            prompt([
+            inquirer.prompt([
                 {
                 type: "list",
                 name: "roleId",
@@ -157,7 +152,7 @@ function addRole() {
             name: name,
             value: id
         }));
-        prompt([
+        inquirer.prompt([
             {
                 name: "title",
                 message: "What is The Role?"
@@ -181,12 +176,8 @@ function addRole() {
 
 }
 
-function updateEmployee() {
-
-}
-
 function init() {
-    prompts();
+    viewEmployee();
 }
 
 init();
