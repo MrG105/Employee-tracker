@@ -3,6 +3,14 @@ const cTable = require('console.table');
 const mysql = require('mysql');
 const db = require('./db');
 
+var connection = mysql.createConnection({
+    host     : 'localhost',
+    port     : 3306,
+    user     : 'root',
+    password : 'root',
+    database : 'employee_db' 
+  });
+   
 
 // TODO:
 // Make Database (schema.sql) - DONE
@@ -55,33 +63,27 @@ function prompts() {
 }
 
 function viewDept() {
-    db.viewDepts()
-        .then(([rows]) => {
-            let departments = rows;
-            console.log("\n");
-            console.table(departments);
-        })
-        .then(() => prompts());
+    connection.query("SELECT department.id, department.name FROM department;", (err, results) => {
+        if (err) throw err;
+        console.table(results);
+        prompts();
+    });
 }
 
 function viewRole() {
-    db.viewRoles()
-        .then(([rows]) => {
-            let roles = rows;
-            console.log("\n");
-            console.table(roles);
-        })
-        .then(() => prompts());
+    connection.query("SELECT role.id, role.title, department.name AS department, role.salary FROM role LEFT JOIN department on role.department_id = department.id;", (err, results) => {
+        if (err) throw err;
+        console.table(results);
+        prompts();
+    })
 }
 
 function viewEmployee() {
-    db.viewEmployees()
-        .then(([rows]) => {
-            let employees = rows;
-            console.log("\n");
-            console.table(employees);
-        })
-        .then(() => prompts());
+    connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employee manager on manager.id = employee.manager_id;", (err, results) => {
+        if (err) throw err;
+        console.table(results);
+        prompts();
+    });
 }
 
 function addDept() {
@@ -92,7 +94,9 @@ function addDept() {
         }
     ]).then(res => {
         let name = res;
-        db.addDept(name);
+        connection.query("INSERT INTO department SET ?", name, (err, results) => {
+            if (err) throw err;            
+        })
         console.log(`Added ${name.name} To The List of Departments`);
         prompts();
     })
@@ -111,23 +115,23 @@ function addEmployee() {
     ]).then(res => {
         let firstName = res.first_name;
         let lastName = res.last_name;
+        connection.query("SELECT role.id, role.title, department.name AS department, role.salary FROM role LEFT JOIN department on role.department_id = department.id;", (err, results) => {
+            if (err) throw err;
+            let roles = results;
 
-        db.viewRoles()
-        .then(([rows]) => {
-            let roles = rows;
-            const roleChoices = roles.map(({ id, title}) => ({
+            const roleChoices = roles.map(({ id, title }) => ({
                 name: title,
                 value: id
             }));
 
             inquirer.prompt([
                 {
-                type: "list",
-                name: "roleId",
-                message: "What Is Your Employee's Role?",
-                choices: roleChoices
+                    type: "list",
+                    name: "roleId",
+                    message: "What Is Your Employee's Role?",
+                    choices: roleChoices
                 }
-            ]).then (res => {
+            ]).then(res => {
                 let roleId = res.roleId;
                 let employee = {
                     first_name: firstName,
@@ -135,19 +139,20 @@ function addEmployee() {
                     role_id: roleId,
                 }
 
-                db.addEmployee(employee);
+                connection.query("INSERT INTO employee SET ?", employee, (err, results) => {
+                    if (err) throw err;
+                });
                 console.log(`Added ${firstName} ${lastName} To The List Of Employees`);
                 prompts();
-            })
-        }) 
+            });
+        });
     })
-
 }
 
 function addRole() {
-    db.viewDepts()
-    .then(([rows]) => {
-        let departments = rows;
+    connection.query("SELECT department.id, department.name FROM department;", (err, results) => {
+        if (err) throw err;
+        let departments = results;
         const deptChoices = departments.map(({id, name}) => ({
             name: name,
             value: id
@@ -168,13 +173,23 @@ function addRole() {
                 choices: deptChoices
             }
         ]).then (role => {
-            db.addRole(role);
+            connection.query("INSERT INTO role SET ?", role);
             console.log(`Added ${role.title} To The List Of Roles`);
             prompts();
         })
     })
 
 }
+
+connection.connect(function(err) {
+    if (err) {
+      console.error('error connecting: ' + err.stack);
+      return;
+    }
+   
+    console.log('connected as id ' + connection.threadId);
+  });
+
 
 function init() {
     viewEmployee();
