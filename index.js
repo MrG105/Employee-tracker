@@ -1,7 +1,6 @@
 const inquirer = require('inquirer');
 const cTable = require('console.table');
 const mysql = require('mysql');
-const db = require('./db');
 
 var connection = mysql.createConnection({
     host     : 'localhost',
@@ -11,15 +10,6 @@ var connection = mysql.createConnection({
     database : 'employee_db' 
   });
    
-
-// TODO:
-// Make Database (schema.sql) - DONE
-// make tables: Department (id, name), Role (id, title, salary, department_id), Employee (id, first_name, last_name, role_id, manager_id) - DONE
-// Make Seed.sql to populate tables - DONE
-// SQL Joins to combine tables in database - MAYBE?
-// inquirer prompts to populate table information - DONE
-// console.table functionality? - MAYBE?
-// Walkthrough video
 
 function prompts() {
     inquirer.prompt([
