@@ -23,7 +23,7 @@
       node index.js  
 
   ## Usage  
-  ![screenshot](assets/images/screenshot.png)  
+  ![screenshot](assets/images/screenshot.PNG)  
   Demo video linked at:[Video](https://drive.google.com/file/d/1QoRYADF2AYRwfnVh-QPRXHZ0p7eoYdPs/view "Demo Video")
 
       
